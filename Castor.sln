@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C1A60F97-E9F8-4C97-8845-276990CCB7C6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{484FA93A-3EFE-41DF-8094-35E37575CD07}"
+	ProjectSection(SolutionItems) = preProject
+		global.json = global.json
+	EndProjectSection
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Castor", "src\Castor\Castor.xproj", "{E3E0FBD0-6591-44CF-B200-7224B8D3D256}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E3E0FBD0-6591-44CF-B200-7224B8D3D256}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3E0FBD0-6591-44CF-B200-7224B8D3D256}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3E0FBD0-6591-44CF-B200-7224B8D3D256}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3E0FBD0-6591-44CF-B200-7224B8D3D256}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E3E0FBD0-6591-44CF-B200-7224B8D3D256} = {C1A60F97-E9F8-4C97-8845-276990CCB7C6}
+	EndGlobalSection
+EndGlobal
