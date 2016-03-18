@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.Data.Entity;
 using Microsoft.AspNet.Mvc;
 using Castor.Models;
+using Microsoft.AspNet.Authorization;
+using Microsoft.AspNet.Http.Features.Authentication;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -18,33 +20,46 @@ namespace Castor.Controllers
         public PostController(BloggingContext context)
         {
             _context = context;
-            Category category = new Category
-            {
-                Name = "None"
-            };
-            User user = new User
-            {
-                Username = "Admin",
-                Password = "admin",
-                Email = "user@castor.io",
-                DisplayName = "CoolAdmin",
-            };
-            Post post = new Post
-            {
-                Title = "Sample post",
-                Content = "lorem ipsum",
-                Date = DateTime.Now,
-                User = user,
-                Category = category
-            };
-            _context.Posts.Add(post);
-            _context.SaveChanges();
         }
         // GET: api/post
-        [HttpGet]
-        public IEnumerable<Post> Get()
+        [HttpGet("Load")]
+        public IActionResult Get()
         {
-            return _context.Posts;
+            var query = from posts in _context.Posts.Include(x => x.Category).Include(x => x.User)
+                select new
+                {
+                    Id = posts.PostId,
+                    posts.Title,
+                    posts.Date,
+                    posts.Category,
+                    posts.User,
+                    posts.Content
+                };
+
+            return Ok(query.ToList());
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetPost(int id)
+        {
+            Post post = await _context.Posts.SingleOrDefaultAsync(x => x.PostId == id);
+
+            if (post != null) return Ok(post);
+            else return HttpBadRequest();
+        }
+
+        [HttpPost]
+        [Authorize("Bearer")]
+        public IActionResult Post([FromBody] Post post)
+        {
+            if (post.Title != null || post.Blog != null)
+            {
+                _context.Posts.Add(post);
+                _context.SaveChanges();
+                return Ok();
+            }
+
+            return this.HttpBadRequest();
         }
     }
 }

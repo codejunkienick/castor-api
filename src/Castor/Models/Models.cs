@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.AspNet.Identity.EntityFramework;
+
 
 namespace Castor.Models
 {
@@ -18,25 +20,23 @@ namespace Castor.Models
 
         public DateTime Date { get; set; }
 
-
         public int BlogId { get; set; }
         public Blog Blog { get; set; }
 
-        public int UserId { get; set; }
         public User User { get; set; }
 
         public int CategoryId { get; set; }
         public Category Category { get; set; }
     }
 
-    public class User
+    public class Role : IdentityRole<int>
     {
-        public int UserId { get; set; }
-        public string Username { get; set; }
+    }
+
+    public class User : IdentityUser<int>
+    {
         public string DisplayName { get; set; }
-        public string Password { get; set; }
         public string Avatar { get; set; }
-        public string Email { get; set; }
         public List<Post> Posts { get; set; }
     }
 
