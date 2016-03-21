@@ -11,17 +11,18 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Castor.Models;
+using Castor.Helpers;
 using Microsoft.AspNet.Authentication.JwtBearer;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Diagnostics;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.Formatters;
-//using Castor.Data;
 using Microsoft.Data.Entity;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.Mvc.Cors;
+using System.Security.Claims;
 
 namespace Castor
 {
@@ -80,7 +81,17 @@ namespace Castor
             {
                 auth.AddPolicy("Bearer", new AuthorizationPolicyBuilder()
                     .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
-                    .RequireAuthenticatedUser().Build());
+                    .RequireAuthenticatedUser()
+                    .RequireClaim(ClaimTypes.Role, "admin", "writer")
+                    .Build());
+            });
+            services.AddAuthorization(auth =>
+            {
+                auth.AddPolicy("AdminBearer", new AuthorizationPolicyBuilder()
+                    .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+                    .RequireAuthenticatedUser()
+                    .RequireClaim(ClaimTypes.Role, "admin")
+                    .Build());
             });
 
             // Add framework services.
@@ -95,6 +106,7 @@ namespace Castor
             services.AddMvc()
                      .AddJsonOptions(options =>
                      {
+                         options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
                          options.SerializerSettings.ContractResolver =
                              new CamelCasePropertyNamesContractResolver();
                      });

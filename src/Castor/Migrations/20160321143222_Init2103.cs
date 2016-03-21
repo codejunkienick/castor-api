@@ -5,7 +5,7 @@ using Microsoft.Data.Entity.Metadata;
 
 namespace Castor.Migrations
 {
-    public partial class init : Migration
+    public partial class Init2103 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -20,18 +20,6 @@ namespace Castor.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Blog", x => x.BlogId);
-                });
-            migrationBuilder.CreateTable(
-                name: "Category",
-                columns: table => new
-                {
-                    CategoryId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Name = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Category", x => x.CategoryId);
                 });
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
@@ -95,39 +83,30 @@ namespace Castor.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
             migrationBuilder.CreateTable(
-                name: "Post",
+                name: "Category",
                 columns: table => new
                 {
-                    PostId = table.Column<int>(nullable: false)
+                    CategoryId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     BlogId = table.Column<int>(nullable: false),
-                    CategoryId = table.Column<int>(nullable: false),
-                    Content = table.Column<string>(nullable: true),
-                    Date = table.Column<DateTime>(nullable: false),
-                    Title = table.Column<string>(nullable: true),
-                    UserId = table.Column<int>(nullable: true)
+                    Name = table.Column<string>(nullable: true),
+                    UserId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Post", x => x.PostId);
+                    table.PrimaryKey("PK_Category", x => x.CategoryId);
                     table.ForeignKey(
-                        name: "FK_Post_Blog_BlogId",
+                        name: "FK_Category_Blog_BlogId",
                         column: x => x.BlogId,
                         principalTable: "Blog",
                         principalColumn: "BlogId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Post_Category_CategoryId",
-                        column: x => x.CategoryId,
-                        principalTable: "Category",
-                        principalColumn: "CategoryId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Post_User_UserId",
+                        name: "FK_Category_User_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
             migrationBuilder.CreateTable(
                 name: "AspNetUserClaims",
@@ -191,6 +170,76 @@ namespace Castor.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+            migrationBuilder.CreateTable(
+                name: "Post",
+                columns: table => new
+                {
+                    PostId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    BlogId = table.Column<int>(nullable: false),
+                    CategoryId = table.Column<int>(nullable: false),
+                    Content = table.Column<string>(nullable: true),
+                    Date = table.Column<DateTime>(nullable: false),
+                    RawContent = table.Column<string>(nullable: true),
+                    Title = table.Column<string>(nullable: false),
+                    UserId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Post", x => x.PostId);
+                    table.ForeignKey(
+                        name: "FK_Post_Blog_BlogId",
+                        column: x => x.BlogId,
+                        principalTable: "Blog",
+                        principalColumn: "BlogId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Post_Category_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "Category",
+                        principalColumn: "CategoryId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Post_User_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+            migrationBuilder.CreateTable(
+                name: "Comment",
+                columns: table => new
+                {
+                    CommentId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    BlogId = table.Column<int>(nullable: false),
+                    Content = table.Column<string>(nullable: true),
+                    PostId = table.Column<int>(nullable: false),
+                    RawContent = table.Column<string>(nullable: true),
+                    UserId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Comment", x => x.CommentId);
+                    table.ForeignKey(
+                        name: "FK_Comment_Blog_BlogId",
+                        column: x => x.BlogId,
+                        principalTable: "Blog",
+                        principalColumn: "BlogId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Comment_Post_PostId",
+                        column: x => x.PostId,
+                        principalTable: "Post",
+                        principalColumn: "PostId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Comment_User_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
             migrationBuilder.CreateIndex(
                 name: "RoleNameIndex",
                 table: "AspNetRoles",
@@ -207,14 +256,15 @@ namespace Castor.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable("Post");
+            migrationBuilder.DropTable("Comment");
             migrationBuilder.DropTable("AspNetRoleClaims");
             migrationBuilder.DropTable("AspNetUserClaims");
             migrationBuilder.DropTable("AspNetUserLogins");
             migrationBuilder.DropTable("AspNetUserRoles");
-            migrationBuilder.DropTable("Blog");
-            migrationBuilder.DropTable("Category");
+            migrationBuilder.DropTable("Post");
             migrationBuilder.DropTable("AspNetRoles");
+            migrationBuilder.DropTable("Category");
+            migrationBuilder.DropTable("Blog");
             migrationBuilder.DropTable("AspNetUsers");
         }
     }

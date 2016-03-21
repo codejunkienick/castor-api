@@ -20,12 +20,14 @@ namespace Castor.Controllers
         private readonly TokenAuthOptions _tokenOptions;
         private BloggingContext _context;
         private UserManager<User> _userManager;
+        private RoleManager<Role> _roleManager;
 
-        public TokenController(TokenAuthOptions tokenOptions, BloggingContext context, UserManager<User> userManager)
+        public TokenController(TokenAuthOptions tokenOptions, BloggingContext context, UserManager<User> userManager, RoleManager<Role> roleManager)
         {
             _tokenOptions = tokenOptions;
             _context = context;
             _userManager = userManager;
+            _roleManager = roleManager;
             //this.bearerOptions = options.Value;
             //this.signingCredentials = signingCredentials;
         }
@@ -50,7 +52,7 @@ namespace Castor.Controllers
                 {
                     user = await _userManager.FindByNameAsync(currentUser.Identity.Name);
                     foreach (Claim c in currentUser.Claims) if (c.Type == "EntityID") entityId = Convert.ToInt32(c.Value);
-                    tokenExpires = DateTime.UtcNow.AddMinutes(2);
+                    tokenExpires = DateTime.UtcNow.AddMinutes(90);
                     token = await GetToken(user, tokenExpires);
                 }
             }
@@ -72,7 +74,7 @@ namespace Castor.Controllers
             bool isUser = await _userManager.CheckPasswordAsync(user, req.password);
             if (isUser)
             {
-                DateTime? expires = DateTime.UtcNow.AddMinutes(2);
+                DateTime? expires = DateTime.UtcNow.AddMinutes(90);
                 var token = await GetToken(user, expires);
                 return Ok(new { authenticated = true, token = token, user = user, tokenExpires = expires });
             }
@@ -85,6 +87,12 @@ namespace Castor.Controllers
             
             ClaimsIdentity identity = new ClaimsIdentity(User.Identity);
             identity.AddClaim(new Claim(ClaimTypes.Name, user.UserName));
+            
+
+            foreach (var role in await _userManager.GetRolesAsync(user))
+            {
+                identity.AddClaim(new Claim(ClaimTypes.Role, role));
+            }
 
             var securityToken = handler.CreateToken(
                 issuer: _tokenOptions.Issuer,

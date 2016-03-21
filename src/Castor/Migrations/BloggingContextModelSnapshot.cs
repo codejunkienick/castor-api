@@ -31,9 +31,31 @@ namespace Castor.Migrations
                     b.Property<int>("CategoryId")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<int>("BlogId");
+
                     b.Property<string>("Name");
 
+                    b.Property<int>("UserId");
+
                     b.HasKey("CategoryId");
+                });
+
+            modelBuilder.Entity("Castor.Models.Comment", b =>
+                {
+                    b.Property<int>("CommentId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("BlogId");
+
+                    b.Property<string>("Content");
+
+                    b.Property<int>("PostId");
+
+                    b.Property<string>("RawContent");
+
+                    b.Property<int>("UserId");
+
+                    b.HasKey("CommentId");
                 });
 
             modelBuilder.Entity("Castor.Models.Post", b =>
@@ -49,9 +71,12 @@ namespace Castor.Migrations
 
                     b.Property<DateTime>("Date");
 
-                    b.Property<string>("Title");
+                    b.Property<string>("RawContent");
 
-                    b.Property<int?>("UserId");
+                    b.Property<string>("Title")
+                        .IsRequired();
+
+                    b.Property<int>("UserId");
 
                     b.HasKey("PostId");
                 });
@@ -187,6 +212,32 @@ namespace Castor.Migrations
                     b.HasKey("UserId", "RoleId");
 
                     b.HasAnnotation("Relational:TableName", "AspNetUserRoles");
+                });
+
+            modelBuilder.Entity("Castor.Models.Category", b =>
+                {
+                    b.HasOne("Castor.Models.Blog")
+                        .WithMany()
+                        .HasForeignKey("BlogId");
+
+                    b.HasOne("Castor.Models.User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("Castor.Models.Comment", b =>
+                {
+                    b.HasOne("Castor.Models.Blog")
+                        .WithMany()
+                        .HasForeignKey("BlogId");
+
+                    b.HasOne("Castor.Models.Post")
+                        .WithMany()
+                        .HasForeignKey("PostId");
+
+                    b.HasOne("Castor.Models.User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Castor.Models.Post", b =>

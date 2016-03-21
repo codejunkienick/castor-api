@@ -5,6 +5,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Data.Entity;
 using Microsoft.Extensions.OptionsModel;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Data.Entity.Metadata;
 
 namespace Castor.Models
 {
@@ -17,15 +18,27 @@ namespace Castor.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            //modelBuilder.Entity<User>()
-            //  .HasIndex(b => b.Username)
-            //  .IsUnique();
-            //modelBuilder.Entity<User>()
-            //  .Property(b => b.Username)
-            //  .IsRequired();
-            //modelBuilder.Entity<User>()
-            //  .Property(b => b.Password)
-            //  .IsRequired();
+            modelBuilder.Entity<Post>()
+                .HasOne(p => p.Category)
+                .WithMany(b => b.Posts)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Post>()
+                .HasOne(p => p.Blog)
+                .WithMany(b => b.Posts)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Comment>()
+                .HasOne(p => p.User)
+                .WithMany(c => c.Comments)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Comment>()
+                .HasOne(p => p.Post)
+                .WithMany(c => c.Comments)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Comment>()
+                .HasOne(p => p.Blog)
+                .WithMany(c => c.Comments)
+                .OnDelete(DeleteBehavior.Restrict);
+
         }
         const string adminRole = "admin";
 
